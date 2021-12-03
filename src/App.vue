@@ -15,9 +15,7 @@ const requestAccount = () => {
     method: 'eth_requestAccounts'
   }, () => { })
 }
-window.ethereum.on('accountsChanged', res => {
-  console.log(res)
-})
+
 const address = computed(() => {
   return shortAddress(accounts.value || '')
 })
@@ -36,9 +34,14 @@ const requestSwitchNetwork = () => {
     swithNet.value = res
   })
 }
-window.ethereum.on('chainChanged', () => {
-  window.location.reload();
-});
+setTimeout(() => {
+  window.ethereum.on('accountsChanged', res => {
+    accounts.value = 'get by ev: ' + accounts.value
+  })
+  window.ethereum.on('chainChanged', () => {
+    window.location.reload();
+  });
+}, 200);
 </script>
 
 <template>
