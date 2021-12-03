@@ -2,32 +2,48 @@
 import { shortAddress } from './util/index'
 import { ethers } from 'ethers'
 import { ChainParam } from './const'
+import MetaMaskOnboarding from '@metamask/onboarding'
+
+// attension: page in wallet dapp browser can not swith net
+
+const onboarding = new MetaMaskOnboarding()
+
+const accounts = ref()
+const chain_id = ref()
+
 
 const provider = markRaw(new ethers.providers.Web3Provider(window.ethereum))
 const signer = markRaw(provider.getSigner())
 
-const chain_id = ref()
+accounts.value = window.ethereum.selectedAddress
+
+window.ethereum.on('chainChanged', () => {
+  window.location.reload();
+});
+
+
 // unit8 chain_id
 const getChainId = async () => {
   chain_id.value = await signer.getChainId()
 }
 
-const accounts = ref()
 const prefix = ref()
-setTimeout(() => {
-  accounts.value = window.ethereum.selectedAddress
-}, 0);
 const requestAccount = async () => {
-  await window.ethereum.enable()
+  if (!MetaMaskOnboarding.isMetaMaskInstalled()) {
+    //will check brower to open extension download url or official site
+    onboarding.startOnboarding()
+  }
+  if (window.ethereum) {
+    await window.ethereum.enable()
 
-  const address = await signer.getAddress()
-  accounts.value = address
+    const address = await signer.getAddress()
+    accounts.value = address
 
-  window.ethereum.on('accountsChanged', res => {
-    prefix.value = 'get by ev: '
-    accounts.value = res
-  })
-
+    window.ethereum.on('accountsChanged', res => {
+      prefix.value = 'get by ev: '
+      accounts.value = res
+    })
+  }
 }
 
 const address = computed(() => {
@@ -36,28 +52,28 @@ const address = computed(() => {
 
 
 const swithNet = ref()
-const addNet = ref()
 const toggle = ref(false)
 const requestSwitchNetwork = async () => {
   toggle.value = !toggle.value
   let testHeco = '0x100'
   let mainnet = '0x1'
-  await requestAddNetwork()
-  // signer.send({
-  //   method: 'wallet_switchEthereumChain',
-  //   params: [{ chainId: toggle.value ? testHeco : mainnet }],
-  // }, (res) => {
-  //   swithNet.value = res
-  // })
+  let chainId = toggle.value ? testHeco : mainnet
+  try {
+    await switchNetwork(chainId)
+  } catch (error) {
+    console.log('error swith network')
+    await addNetwork()
+    switchNetwork(chainId)
+  }
 }
-const requestAddNetwork = async () => {
-  return await signer.send({ method: 'wallet_addEthereumChain', params: [ChainParam] }, (res) => { addNet.value = res })
+const switchNetwork = (chainId) => {
+  return provider.send('wallet_switchEthereumChain', [{ chainId }])
 }
-setTimeout(() => {
-  window.ethereum.on('chainChanged', () => {
-    window.location.reload();
-  });
-}, 200);
+const addNetwork = async () => {
+  return await provider.send('wallet_addEthereumChain', [ChainParam])
+}
+
+
 </script>
 
 <template>
@@ -68,7 +84,6 @@ setTimeout(() => {
   </div>
   <div>
     <button @click="requestSwitchNetwork">switchEthereumChain</button>
-    <p>{{ addNet }}</p>
     <p>{{ swithNet }}</p>
   </div>
   <div>

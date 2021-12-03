@@ -1,6 +1,7 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@metamask/onboarding': ^1.0.1
   '@vitejs/plugin-vue': ^1.9.3
   '@vueuse/core': ^7.1.2
   ethers: ^5.5.2
@@ -9,6 +10,7 @@ specifiers:
   vue: ^3.2.23
 
 dependencies:
+  '@metamask/onboarding': 1.0.1
   ethers: 5.5.2
   vue: 3.2.23
 
@@ -345,6 +347,12 @@ packages:
       '@ethersproject/strings': 5.5.0
     dev: false
 
+  /@metamask/onboarding/1.0.1:
+    resolution: {integrity: sha512-FqHhAsCI+Vacx2qa5mAFcWNSrTcVGMNjzxVgaX8ECSny/BJ9/vgXP9V7WF/8vb9DltPeQkxr+Fnfmm6GHfmdTQ==}
+    dependencies:
+      bowser: 2.11.0
+    dev: false
+
   /@rollup/pluginutils/4.1.1:
     resolution: {integrity: sha512-clDjivHqWGXi7u+0d2r2sBi4Ie6VLEAzWMIkvJLnDmxoOhBYOTfzGbOQBA32THHm11/LiJbd01tJUpJsbshSWQ==}
     engines: {node: '>= 8.0.0'}
@@ -490,6 +498,10 @@ packages:
 
   /bn.js/4.12.0:
     resolution: {integrity: sha512-c98Bf3tPniI+scsdk237ku1Dc3ujXQTSgyiPUDEOe7tRkhrqridvh8klBv0HCEso1OLOYcHuCv/cS6DNxKH+ZA==}
+    dev: false
+
+  /bowser/2.11.0:
+    resolution: {integrity: sha512-AlcaJBi/pqqJBIQ8U9Mcpc9i8Aqxn88Skv5d+xBX006BY5u8N3mGLHa5Lgppa7L/HfwgwLgZ6NYs+Ag6uUmJRA==}
     dev: false
 
   /brorand/1.1.0:
