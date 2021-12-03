@@ -3,8 +3,8 @@ import { shortAddress } from './util/index'
 import { ethers } from 'ethers'
 import { ChainParam } from './const'
 
-const provider = new ethers.providers.Web3Provider(window.ethereum)
-const signer = provider.getSigner()
+const provider = markRaw(new ethers.providers.Web3Provider(window.ethereum))
+const signer = markRaw(provider.getSigner())
 
 const chain_id = ref()
 // unit8 chain_id
@@ -36,21 +36,22 @@ const address = computed(() => {
 
 
 const swithNet = ref()
+const addNet = ref()
 const toggle = ref(false)
 const requestSwitchNetwork = async () => {
   toggle.value = !toggle.value
   let testHeco = '0x100'
   let mainnet = '0x1'
   await requestAddNetwork()
-  window.ethereum.send({
-    method: 'wallet_switchEthereumChain',
-    params: [{ chainId: toggle.value ? testHeco : mainnet }],
-  }, (res) => {
-    swithNet.value = res
-  })
+  // signer.send({
+  //   method: 'wallet_switchEthereumChain',
+  //   params: [{ chainId: toggle.value ? testHeco : mainnet }],
+  // }, (res) => {
+  //   swithNet.value = res
+  // })
 }
 const requestAddNetwork = async () => {
-  return await window.ethereum.send({ method: 'wallet_addEthereumChain', params: [ChainParam] }, () => { })
+  return await signer.send({ method: 'wallet_addEthereumChain', params: [ChainParam] }, (res) => { addNet.value = res })
 }
 setTimeout(() => {
   window.ethereum.on('chainChanged', () => {
@@ -67,6 +68,7 @@ setTimeout(() => {
   </div>
   <div>
     <button @click="requestSwitchNetwork">switchEthereumChain</button>
+    <p>{{ addNet }}</p>
     <p>{{ swithNet }}</p>
   </div>
   <div>
