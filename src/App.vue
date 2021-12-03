@@ -1,10 +1,13 @@
 <script setup>
 import { shortAddress } from './util/index'
-import { Contract, ethers } from 'ethers'
+import { ethers } from 'ethers'
+
+const provider = new ethers.providers.Web3Provider(window.ethereum)
+const signer = provider.getSigner()
 
 const chain_id = ref()
 const getChainId = async () => {
-  chain_id.value = await window.ethereum.send('eth_chainId')
+  chain_id.value = await signer.getChainId()
 }
 
 const accounts = ref()
@@ -12,22 +15,15 @@ const prefix = ref()
 setTimeout(() => {
   accounts.value = window.ethereum.selectedAddress
 }, 0);
-const requestAccount = () => {
-  window.ethereum.send({
-    method: 'eth_requestAccounts'
-  }, res => {
-    setTimeout(() => {
-      prefix.value = 'get by req: '
-      let provider = new ethers.providers.Web3Provider(window.ethereum)
-      accounts.value = provider.provider.selectedAddress;
-    }, 100);
+const requestAccount = async () => {
+  await window.ethereum.enable()
 
+  const address = await signer.getAddress()
+  accounts.value = address
 
-    window.ethereum.on('accountsChanged', res => {
-      prefix.value = 'get by ev: '
-      accounts.value = res
-    })
-
+  window.ethereum.on('accountsChanged', res => {
+    prefix.value = 'get by ev: '
+    accounts.value = res
   })
 
 }
