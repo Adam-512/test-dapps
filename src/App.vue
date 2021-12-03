@@ -19,7 +19,7 @@ window.ethereum.on('accountsChanged', res => {
   console.log(res)
 })
 const address = computed(() => {
-  return shortAddress(accounts.value)
+  return shortAddress(accounts.value || '')
 })
 
 
