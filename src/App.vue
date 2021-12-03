@@ -15,9 +15,11 @@ const requestAccount = () => {
   window.ethereum.send({
     method: 'eth_requestAccounts'
   }, res => {
-    console.log(res)
-    prefix.value = 'get by req: '
-    accounts.value = window.ethereum.selectedAddress
+    setTimeout(() => {
+      prefix.value = 'get by req: '
+      accounts.value = window.ethereum.selectedAddress
+    }, 100);
+
 
     window.ethereum.on('accountsChanged', res => {
       prefix.value = 'get by ev: '
