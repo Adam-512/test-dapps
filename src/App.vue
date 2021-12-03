@@ -7,13 +7,25 @@ const getChainId = async () => {
 }
 
 const accounts = ref()
+const prefix = ref()
 setTimeout(() => {
   accounts.value = window.ethereum.selectedAddress
 }, 0);
 const requestAccount = () => {
   window.ethereum.send({
     method: 'eth_requestAccounts'
-  }, () => { })
+  }, res => {
+    console.log(res)
+    prefix.value = 'get by req: '
+    accounts.value = window.ethereum.selectedAddress
+
+    window.ethereum.on('accountsChanged', res => {
+      prefix.value = 'get by ev: '
+      accounts.value = res
+    })
+
+  })
+
 }
 
 const address = computed(() => {
@@ -35,9 +47,6 @@ const requestSwitchNetwork = () => {
   })
 }
 setTimeout(() => {
-  window.ethereum.on('accountsChanged', res => {
-    accounts.value = 'get by ev: ' + accounts.value
-  })
   window.ethereum.on('chainChanged', () => {
     window.location.reload();
   });
@@ -56,7 +65,7 @@ setTimeout(() => {
   </div>
   <div>
     <button @click="requestAccount">requestAccount</button>
-    <p>{{ address }}</p>
+    <p>{{ prefix }}{{ address }}</p>
   </div>
 </template>
 
