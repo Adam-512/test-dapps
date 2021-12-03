@@ -1,5 +1,6 @@
 <script setup>
 import { shortAddress } from './util/index'
+import { Contract, ethers } from 'ethers'
 
 const chain_id = ref()
 const getChainId = async () => {
@@ -17,7 +18,8 @@ const requestAccount = () => {
   }, res => {
     setTimeout(() => {
       prefix.value = 'get by req: '
-      accounts.value = window.ethereum.selectedAddress
+      let provider = new ethers.providers.Web3Provider(window.ethereum)
+      accounts.value = provider.provider.selectedAddress;
     }, 100);
 
 
